@@ -1,0 +1,33 @@
+# Enable auto-selection of build:<os> blocks (build:macos/build:linux/...).
+common --enable_platform_specific_config
+
+# For Linux:
+build:linux   --cxxopt='-std=c++23'
+build:linux   --host_cxxopt='-std=c++23'
+build:linux   --per_file_copt='external/.*@-w'
+build:linux   --host_per_file_copt='external/.*@-w'
+build:linux   --cxxopt='-Wno-deprecated-declarations'
+build:linux   --host_cxxopt='-Wno-deprecated-declarations'
+build:linux   --action_env=CC=/usr/bin/clang
+build:linux   --action_env=CXX=/usr/bin/clang++
+
+# For macOS:
+# Use the built-in Apple clang on macOS to avoid build failures from third-party dependencies.
+build:macos   --cxxopt='-std=c++23'
+build:macos   --host_cxxopt='-std=c++23'
+build:macos   --per_file_copt='external/.*@-w'
+build:macos   --host_per_file_copt='external/.*@-w'
+build:macos   --cxxopt='-Wno-deprecated-declarations'
+build:macos   --host_cxxopt='-Wno-deprecated-declarations'
+build:macos   --linkopt='-Wl,-no_warn_duplicate_libraries'
+build:macos   --host_linkopt='-Wl,-no_warn_duplicate_libraries'
+build:macos   --action_env=CC=/usr/bin/clang
+build:macos   --action_env=CXX=/usr/bin/clang++
+
+# NOT VERIFIED
+build:windows --compiler='msvc-cl'
+build:windows --cxxopt='/std:c++23'
+build:windows --host_cxxopt='/std:c++23'
+build:windows --define=protobuf_allow_msvc=true
+build:windows --features=compiler_param_file
+build:windows --host_features=compiler_param_file

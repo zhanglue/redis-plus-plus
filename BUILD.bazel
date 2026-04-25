@@ -1,0 +1,63 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+REDIS_PLUS_PLUS_SYNC_SRCS = [
+    "src/sw/redis++/command.cpp",
+    "src/sw/redis++/command_options.cpp",
+    "src/sw/redis++/connection.cpp",
+    "src/sw/redis++/connection_pool.cpp",
+    "src/sw/redis++/crc16.cpp",
+    "src/sw/redis++/errors.cpp",
+    "src/sw/redis++/patterns/redlock.cpp",
+    "src/sw/redis++/pipeline.cpp",
+    "src/sw/redis++/redis.cpp",
+    "src/sw/redis++/redis_cluster.cpp",
+    "src/sw/redis++/redis_uri.cpp",
+    "src/sw/redis++/reply.cpp",
+    "src/sw/redis++/sentinel.cpp",
+    "src/sw/redis++/shards.cpp",
+    "src/sw/redis++/shards_pool.cpp",
+    "src/sw/redis++/subscriber.cpp",
+    "src/sw/redis++/transaction.cpp",
+]
+
+REDIS_PLUS_PLUS_SYNC_HDRS = glob(
+    [
+        "src/sw/redis++/*.h",
+        "src/sw/redis++/*.hpp",
+        "src/sw/redis++/patterns/*.h",
+        "src/sw/redis++/patterns/*.hpp",
+    ],
+    allow_empty = True,
+    exclude = [
+        "src/sw/redis++/async_*.h",
+        "src/sw/redis++/co_*.h",
+        "src/sw/redis++/event_*.h",
+    ],
+) + glob([
+    "src/sw/redis++/cxx17/sw/redis++/*.h",
+    "src/sw/redis++/no_tls/sw/redis++/*.h",
+]) + [
+    "bazel/include/sw/redis++/hiredis_features.h",
+]
+
+cc_library(
+    name = "redis++",
+    srcs = REDIS_PLUS_PLUS_SYNC_SRCS,
+    hdrs = REDIS_PLUS_PLUS_SYNC_HDRS,
+    includes = [
+        "bazel/include",
+        "src",
+        "src/sw/redis++/cxx17",
+        "src/sw/redis++/no_tls",
+    ],
+    copts = ["-std=c++17"],
+    linkopts = ["-pthread"],
+    deps = ["@hiredis//:hiredis"],
+)
+
+alias(
+    name = "redis_plus_plus",
+    actual = ":redis++",
+)
